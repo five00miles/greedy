@@ -1,13 +1,9 @@
 <template>
   <div class="hello">
     <div>
-      <div class="time-item" v-for="(time,idx) in timeList" :key="idx">
-        <el-time-select placeholder="起始时间" v-model="time.startTime"
-                        :picker-options="{start: '00:00',step: '00:01', end: '24:00' }">
-        </el-time-select>
-        <el-time-select placeholder="结束时间" v-model="time.endTime"
-                        :picker-options="{start: '00:00',step: '00:01',end: '24:00',minTime: time.startTime}">
-        </el-time-select>
+      <div class="time-item" v-for="(item,idx) in timeList" :key="idx">
+        <el-time-picker is-range arrow-control v-model="item.time" format="HH:mm" value-format="HH:mm" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间">
+        </el-time-picker>
       </div>
     </div>
 
@@ -21,14 +17,16 @@
 export default {
   data() {
     return {
-      timeList: [{ startTime: '', endTime: '' }]
+      timeList: [{ time: '' }]
     }
   },
   methods: {
     handleAdd() {
-      this.timeList.push({ startTime: '', endTime: '' })
+      this.timeList.push({ time: '' })
     },
-    mymethod(tableEdit) {
+    mymethod(arr) {
+      var tableEdit = this.formatTime(arr)
+      console.log(tableEdit)
       var layerEditFlage = false
       var startTimeArr = []
       var endTimeArr = []
@@ -53,6 +51,15 @@ export default {
       if (layerEditFlage) {
         console.log('时间段有重叠,请检查!!')
       }
+    },
+    formatTime(arr) {
+      const tableEdit = [...arr]
+      return tableEdit.map(time => {
+        return {
+          startTime: time.time[0].split(':')[0] * 60 + time.time[0].split(':')[1] * 1,
+          endTime: time.time[1].split(':')[0] * 60 + time.time[1].split(':')[1] * 1
+        }
+      })
     }
   }
 }
